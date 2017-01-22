@@ -11938,7 +11938,7 @@ Number of classes = 43
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f36886debe0&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f97b2b97ba8&gt;</pre>
 </div>
 
 </div>
@@ -13496,7 +13496,7 @@ RK5CYII=
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f368860f780&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f97b2ac6780&gt;</pre>
 </div>
 
 </div>
@@ -14987,7 +14987,7 @@ f4V+2qOCdHu6AAAAAElFTkSuQmCC
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f36885fba58&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f97b2ab29e8&gt;</pre>
 </div>
 
 </div>
@@ -16062,7 +16062,7 @@ UjUGC0mSVI3BQpIkVWOwkCRJ1RgsJElSNf8P4X/8e4pA+kwAAAAASUVORK5CYII=
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f367816e198&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f978b3c9278&gt;</pre>
 </div>
 
 </div>
@@ -16884,7 +16884,8 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong> Concerning the <strong>optional</strong> part: see <em>Question 1</em>.</p>
-<p>The split in training and validation data was performed as follows: from reference [2], it became clear that the individual observations in the training set are <strong>not independent</strong>.</p>
+<p>The split in training and validation data was performed as follows: from reference [2], it became clear that the individual observations in the training set are <strong>not independent</strong>: sequences of 30 consecutive images come from a single video (i.e. image 0:30 are one video, 30:60 are the seconde video, etc.) capturing a single traffic sign. Thus the split into training and validation set was performed at the level of videos (otherwise the cross validation error would not be representative of the test set). 25% of these videos were resevered as validation set. The test set was taken as is from the data (here it was checked that consecutive images do not come from a single video).</p>
+<p>The function to create the train/validation split calculates the number of videos, then splits the corresponding range into training and validation set using a 75/25 split.</p>
 
 </div>
 </div>
@@ -17014,7 +17015,8 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer:</strong> As discussed in <em>Question </em>3, different learning rates, batch sizes, standard deviations for the weight initialization and dropout rates were used in order to make the errors of the 25 models less correlated. As optimizer, I chose to stick with the <em>AdamOptimzer</em>. It would have been possible to also vary this "hyperparameter" in the process of building models to average.</p>
+<p><strong>Answer:</strong> As discussed in <em>Question </em>3, different learning rates, batch sizes, standard deviations for the weight initialization and dropout rates were used in order to make the errors of the 25 models less correlated. A random search in hyperparameter space using cross-validation was used to find good sets of hyperparameters for single models: it was found that the learning rate should be between 0.0001 and 0.0005. The epochs parameter was held constant at 50: fewer epochs might have been possible to reduce computation time, but would not have increased accuracy. Cross-validation showed that the weights have to be initialized close to zero in order to have a well performing model, thus the standard deviation of the initialized weights (SIGMA) had to be close to zero (0.01 or 0.03). Dropout was introduced to reduce overfitting: dropout "turns off" units during the training process and thus leads to the network relying less on single neurons. Furthermore, it can also be seen as another way of model avering to reduce overfitting (effectively each dropout configuration, i.e. combination of deactivated neurons, correpsonds to a different network and all these different networks are averaged). The keep probability (here, falsely called DROPOUT_RATE) is varied as well. Cross validation revealed that a single DNN trains well across ranges of dropout.</p>
+<p>As optimizer, I chose to stick with the <em>AdamOptimzer</em>. It would have been possible to also vary this "hyperparameter" in the process of building models to average.</p>
 <p>The training was done on AWS with a g2.xlarge instance. The training and cross validation process was computationally intensive and this led to the not very deep convolutional layers.</p>
 
 </div>
@@ -17120,7 +17122,7 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
@@ -17198,7 +17200,7 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">calculate_accuracy</span><span class="p">(</span><span class="n">predicted</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span>
@@ -17224,7 +17226,7 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -17312,7 +17314,7 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">read_image</span><span class="p">(</span><span class="n">img_path</span><span class="p">):</span>
@@ -17338,7 +17340,7 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example1.jpeg&#39;</span><span class="p">))</span>
@@ -17352,11 +17354,11 @@ DuGurq6uCdUh3NXV1TWhOoS7urq6JlSHcFdXV9eE+n9UPOsB0yfqDQAAAABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35d5b876d8&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f97047679e8&gt;</pre>
 </div>
 
 </div>
@@ -19218,7 +19220,7 @@ TjtfDzYKAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example1.jpeg&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)))</span>
@@ -19232,11 +19234,11 @@ TjtfDzYKAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35d673a128&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f9704c1c940&gt;</pre>
 </div>
 
 </div>
@@ -20712,7 +20714,7 @@ M53pTGe6RzqD8JnOdKYz3SOdQfhMZzrTme6R/n+BZmZB8v06sAAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example2.jpeg&#39;</span><span class="p">))</span>
@@ -20726,11 +20728,11 @@ M53pTGe6RzqD8JnOdKYz3SOdQfhMZzrTme6R/n+BZmZB8v06sAAAAABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35d671bd68&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f9704baa358&gt;</pre>
 </div>
 
 </div>
@@ -22710,7 +22712,7 @@ AElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example2.jpeg&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)))</span>
@@ -22724,11 +22726,11 @@ AElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35e2aafdd8&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f970cfe0f98&gt;</pre>
 </div>
 
 </div>
@@ -24287,7 +24289,7 @@ kpOc5CQ3KCcQPslJTnKSG5T/Hw1KbmchUg/rAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example3.jpg&#39;</span><span class="p">))</span>
@@ -24301,11 +24303,11 @@ kpOc5CQ3KCcQPslJTnKSG5T/Hw1KbmchUg/rAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35e2bdd2b0&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f97056d1828&gt;</pre>
 </div>
 
 </div>
@@ -25935,7 +25937,7 @@ jnmDXCDlyJFj3iAXSDly5Jg3yAVSjhw55g1ygZQjR455g/8DbqS54GgaJSoAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example3.jpg&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)))</span>
@@ -25949,11 +25951,11 @@ jnmDXCDlyJFj3iAXSDly5Jg3yAVSjhw55g1ygZQjR455g/8DbqS54GgaJSoAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35dc277588&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f970d007438&gt;</pre>
 </div>
 
 </div>
@@ -27206,7 +27208,7 @@ CYuIBPoEWSaW+h6paTsAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example4.jpeg&#39;</span><span class="p">))</span>
@@ -27220,11 +27222,11 @@ CYuIBPoEWSaW+h6paTsAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35e2ab8198&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f970cf9e710&gt;</pre>
 </div>
 
 </div>
@@ -29337,7 +29339,7 @@ Ax3oQAc60IGeAzoA/oEOdKADHehAzwH9/54uvVeX6PsWAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example4.jpeg&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)))</span>
@@ -29351,11 +29353,11 @@ Ax3oQAc60IGeAzoA/oEOdKADHehAzwH9/54uvVeX6PsWAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35dc01bc18&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f970cf610b8&gt;</pre>
 </div>
 
 </div>
@@ -30688,7 +30690,7 @@ xwAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example5.jpeg&#39;</span><span class="p">))</span>
@@ -30702,11 +30704,11 @@ xwAAAABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35d635e710&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f9704b2dc50&gt;</pre>
 </div>
 
 </div>
@@ -32987,7 +32989,7 @@ g6CgoKCgoKAA+Gu0DuPRfw0TmgAAAABJRU5ErkJggg==
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">read_image</span><span class="p">(</span><span class="s1">&#39;./new_signs/example5.jpeg&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)))</span>
@@ -33001,11 +33003,11 @@ g6CgoKCgoKAA+Gu0DuPRfw0TmgAAAABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[26]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;matplotlib.image.AxesImage at 0x7f35d620f128&gt;</pre>
+<pre>&lt;matplotlib.image.AxesImage at 0x7f9704711588&gt;</pre>
 </div>
 
 </div>
@@ -34295,7 +34297,7 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;./new_signs/example1.jpeg&#39;</span><span class="p">,</span>
@@ -34324,14 +34326,16 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">right_signs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Speed limit (20km/h)&#39;</span><span class="p">,</span> <span class="s1">&#39;No passing&#39;</span><span class="p">,</span> <span class="s1">&#39;Speed limit (60km/h)&#39;</span><span class="p">,</span> <span class="s1">&#39;Stop&#39;</span><span class="p">,</span> <span class="s1">&#39;Bumpy road&#39;</span><span class="p">]</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Classid&#39;</span><span class="p">])</span>
 <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;image_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;image_number&#39;</span><span class="p">)</span>
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">y_train_labels</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;Classid&#39;</span><span class="p">,</span> <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;inner&#39;</span><span class="p">)</span>
+<span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;right_sign&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_signs</span>
 <span class="n">predictions</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
 </pre></div>
 
@@ -34343,7 +34347,7 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -34354,9 +34358,11 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
       <th>Classid</th>
       <th>ClassId</th>
       <th>SignName</th>
+      <th>right_sign</th>
     </tr>
     <tr>
       <th>image_number</th>
+      <th></th>
       <th></th>
       <th></th>
       <th></th>
@@ -34368,11 +34374,13 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
       <td>16</td>
       <td>16</td>
       <td>Vechiles over 3.5 metric tons prohibited</td>
+      <td>Speed limit (20km/h)</td>
     </tr>
     <tr>
       <th>2</th>
       <td>9</td>
       <td>9</td>
+      <td>No passing</td>
       <td>No passing</td>
     </tr>
     <tr>
@@ -34380,17 +34388,20 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
       <td>12</td>
       <td>12</td>
       <td>Priority road</td>
+      <td>Speed limit (60km/h)</td>
     </tr>
     <tr>
       <th>4</th>
       <td>14</td>
       <td>14</td>
       <td>Stop</td>
+      <td>Stop</td>
     </tr>
     <tr>
       <th>5</th>
       <td>22</td>
       <td>22</td>
+      <td>Bumpy road</td>
       <td>Bumpy road</td>
     </tr>
   </tbody>
@@ -34409,7 +34420,11 @@ LLPMMssaZQbhWWaZZZY1yv8DwSJVQBjDGSYAAAAASUVORK5CYII=
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We have an accuracy of 60% in these examples. The model get images 2, 4 and 5 correct.</p>
+<p>We have an accuracy of 60% in these examples. The model get images 2, 4 and 5 correct. The 60% are lower than the 98.5% obtained above. Possible reasons therefore:</p>
+<ul>
+<li>The images taken from the web are created differently (different camera, different angles, etc.) and thus are not representative of the training set.</li>
+<li>Statistical variation: there is the possibility that a 98.5% accurate classifier predicts only 3 out of 5 examples correctly. The p-value for this is very small (0.002 using an exact binomal test) and so it is <em>implausible</em> that the 60% come only from random variation.</li>
+</ul>
 
 </div>
 </div>
@@ -34452,17 +34467,20 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">top_5</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">logits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="mi">5</span><span class="p">])</span>
 <span class="n">top_5</span><span class="p">[</span><span class="s1">&#39;image_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="n">top_5</span><span class="p">[</span><span class="s1">&#39;right_sign&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_signs</span>
 <span class="n">top_5</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">top_5</span><span class="p">,</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;image_number&#39;</span><span class="p">],</span> <span class="n">value_vars</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">value_name</span><span class="o">=</span><span class="s1">&#39;Classid&#39;</span><span class="p">)</span>
 <span class="n">top_5</span> <span class="o">=</span> <span class="n">top_5</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;variable&#39;</span><span class="p">:</span> <span class="s1">&#39;Rank&#39;</span><span class="p">})</span>
 <span class="n">top_5</span> <span class="o">=</span> <span class="n">top_5</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">y_train_labels</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;Classid&#39;</span><span class="p">,</span> <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;inner&#39;</span><span class="p">)</span>
 <span class="n">top_5</span> <span class="o">=</span> <span class="n">top_5</span><span class="p">[[</span><span class="s1">&#39;image_number&#39;</span><span class="p">,</span> <span class="s1">&#39;Rank&#39;</span><span class="p">,</span> <span class="s1">&#39;SignName&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;image_number&#39;</span><span class="p">,</span> <span class="s1">&#39;Rank&#39;</span><span class="p">])</span>
 
-<span class="n">top_5</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;image_number&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;Rank&#39;</span><span class="p">)</span>
+<span class="n">top_5_pivot</span> <span class="o">=</span> <span class="n">top_5</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;image_number&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;Rank&#39;</span><span class="p">)</span>
+<span class="n">top_5_pivot</span><span class="p">[</span><span class="s1">&#39;right_sign&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_signs</span>
+<span class="n">top_5_pivot</span>
 </pre></div>
 
 </div>
@@ -34473,7 +34491,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -34482,6 +34500,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
     <tr>
       <th></th>
       <th colspan="5" halign="left">SignName</th>
+      <th>right_sign</th>
     </tr>
     <tr>
       <th>Rank</th>
@@ -34490,9 +34509,11 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
       <th>2</th>
       <th>3</th>
       <th>4</th>
+      <th></th>
     </tr>
     <tr>
       <th>image_number</th>
+      <th></th>
       <th></th>
       <th></th>
       <th></th>
@@ -34508,6 +34529,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
       <td>Speed limit (30km/h)</td>
       <td>End of speed limit (80km/h)</td>
       <td>Speed limit (20km/h)</td>
+      <td>Speed limit (20km/h)</td>
     </tr>
     <tr>
       <th>2</th>
@@ -34516,6 +34538,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
       <td>No passing for vechiles over 3.5 metric tons</td>
       <td>Vechiles over 3.5 metric tons prohibited</td>
       <td>Slippery road</td>
+      <td>No passing</td>
     </tr>
     <tr>
       <th>3</th>
@@ -34524,6 +34547,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
       <td>Yield</td>
       <td>No entry</td>
       <td>No passing for vechiles over 3.5 metric tons</td>
+      <td>Speed limit (60km/h)</td>
     </tr>
     <tr>
       <th>4</th>
@@ -34532,6 +34556,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
       <td>Road work</td>
       <td>Yield</td>
       <td>Priority road</td>
+      <td>Stop</td>
     </tr>
     <tr>
       <th>5</th>
@@ -34540,6 +34565,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
       <td>Traffic signals</td>
       <td>Road work</td>
       <td>Dangerous curve to the right</td>
+      <td>Bumpy road</td>
     </tr>
   </tbody>
 </table>
@@ -34552,9 +34578,20 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Answer:</strong> The predicted classes and the right classes can be seen in the table above. We see that in the first example, the correct answer (Speed limit 20 km/h) is in the top 5. For the other incorrect example (image_number == 3), the correct answer (speed limit 60) is not in the top 5.</p>
+<p>The table below shows the certainty of the predictions: the neural net is <strong>very certain</strong> in each case (basically it predicts a probability of one in each case), which is a sign of overfitting. This could have been prevented by reducing the number of epochs, though that would not have helped to increase the accuracy.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">probs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logits</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logits</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
@@ -34573,7 +34610,7 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -34651,17 +34688,6 @@ a = np.array([[ 0.24879643,  0.07032244,  0.12641572,  0.34763842,  0.07893497,
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer:</strong> The model is very certain about all its predictions, which is a sign of overfitting. From that point of view it might have been better to reduce the number of epochs.</p>
-<p>In the first example, we at least have the right prediction in the top 5. In the third example we do not.</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
